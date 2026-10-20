@@ -395,9 +395,3 @@
     </script>
 </body>
 </html>
-```
-
-### Apa Perubahan Utama yang Dilakukan?
-1. **Dukungan Penuh GitHub Pages (Client-Side Only):** Membaca berkas video langsung dari memori browser (`ArrayBuffer`) tanpa memanggil perintah server `ffmpeg` yang menyebabkan error saat diunggah ke GitHub Pages.
-2. **Real Binary MP4 Excision Engine:** Menelusuri atom biner MP4 (`uuid`, `udta`, `meta`, `c2pa`, `jumb`) dan menimpa metadatanya secara *in-place* menjadi kotak `free` (padding kosong).
-3. **Penyimpanan Memori Efisien:** Menggunakan `Blob` dan `URL.createObjectURL` lokal untuk langsung memutar preview video hasil sanitasi dan mengunduhnya secara bebas tanpa batasan CORS.
