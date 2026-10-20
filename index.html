@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaCleaner Pro - GitHub Pages Frontend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- HEADER -->
+    <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-900/30">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight text-white flex items-center gap-2">
+                        MetaCleaner Pro <span class="text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono font-bold px-2.5 py-0.5 rounded-full">GitHub Pages Edition</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Frontend GitHub Pages + Backend Google Apps Script Engine</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold rounded-full flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> GAS API Connected
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+
+        <!-- CONFIGURATION BADGE -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center space-x-2 truncate">
+                <span class="text-slate-500">Target Backend API:</span>
+                <span id="backendUrlDisplay" class="text-indigo-400 font-bold truncate">https://script.google.com/macros/s/AKfycbw_efdGnec0FIwtVOa8-AK2eGRyHoiSlz72QZXZXUcJ_Z3v14hg1ICxeJNae6mNjxQ_0g/exec</span>
+            </div>
+            <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded text-[10px] uppercase font-bold">POST Endpoint</span>
+        </div>
+
+        <!-- FILE UPLOAD CONTROL -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl flex flex-col md:flex-row gap-5 items-center justify-between">
+            <div id="dropZone" class="w-full md:w-2/3 border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-950/60 flex flex-col items-center justify-center space-y-2">
+                <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center text-2xl font-bold">📹</div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-200">Pilih Berkas Video MP4 untuk Dibersihkan</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Disarankan ukuran file di bawah 30 MB untuk eksekusi Apps Script optimal</p>
+                </div>
+                <input type="file" id="videoFileInput" accept="video/mp4,video/*" class="hidden" onchange="handleFileSelected(event)">
+            </div>
+
+            <div class="w-full md:w-1/3 flex flex-col gap-3">
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs space-y-2">
+                    <div class="flex justify-between font-bold text-slate-300">
+                        <span class="text-slate-500">Berkas:</span>
+                        <span id="fileNameDisplay" class="text-indigo-400 truncate max-w-[160px]">Belum Ada Berkas</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span class="text-slate-500">Ukuran:</span>
+                        <span id="fileSizeDisplay" class="text-slate-200">-</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span class="text-slate-500">Status Server:</span>
+                        <span id="fileStatusBadge" class="text-amber-400 font-semibold">Menunggu Berkas</span>
+                    </div>
+                </div>
+
+                <button id="actionBtn" onclick="executeSanitizationViaApi()" disabled class="w-full py-3.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed">
+                    ⚡ Kirim ke Apps Script API Engine
+                </button>
+            </div>
+        </div>
+
+        <!-- BEFORE VS AFTER INSPECTOR -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- PANEL BEFORE -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col space-y-3">
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-800">
+                    <h3 class="text-xs font-extrabold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                        1. Preview Video Input (Asli)
+                    </h3>
+                    <span id="beforeBadge" class="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] font-extrabold rounded-full uppercase">
+                        STANDBY
+                    </span>
+                </div>
+
+                <div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden aspect-video relative flex items-center justify-center">
+                    <video id="videoPreviewBefore" controls class="w-full h-full object-contain hidden"></video>
+                    <div id="placeholderBefore" class="text-center p-4">
+                        <span class="text-3xl block mb-1">🎞️</span>
+                        <p class="text-[11px] text-slate-500">Preview Video Asli</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL AFTER -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col space-y-3">
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-800">
+                    <h3 class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        2. Preview Video Hasil (Cleaned)
+                    </h3>
+                    <span id="afterBadge" class="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] font-extrabold rounded-full uppercase">
+                        MENUNGGU
+                    </span>
+                </div>
+
+                <div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden aspect-video relative flex items-center justify-center">
+                    <video id="videoPreviewAfter" controls class="w-full h-full object-contain hidden"></video>
+                    <div id="placeholderAfter" class="text-center p-4">
+                        <span class="text-3xl block mb-1">✨</span>
+                        <p class="text-[11px] text-slate-500">Preview Video Hasil</p>
+                    </div>
+                </div>
+
+                <div class="pt-1">
+                    <button id="downloadBtn" disabled onclick="downloadCleanFile()" class="w-full py-2.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed">
+                        📥 Unduh Berkas Bersih (MP4)
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TERMINAL LOG -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    🖥️ GitHub Pages to Apps Script Execution Log
+                </h3>
+                <span id="progressText" class="text-xs font-mono font-bold text-indigo-400">READY</span>
+            </div>
+
+            <div id="terminal" class="bg-slate-950 border border-slate-800/90 rounded-xl p-4 font-mono-code text-xs text-slate-300 h-44 overflow-y-auto space-y-1.5 leading-relaxed">
+                <div class="text-indigo-400">[GitHub Pages MetaCleaner Engine] Initialized.</div>
+                <div class="text-slate-500">Pilih file video MP4 untuk dikirimkan ke Google Apps Script backend.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        <p>&copy; MetaCleaner Pro — GitHub Pages Frontend with Google Apps Script Backend Engine.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // CLEANED BACKEND ENDPOINT URL (Multi-account session /u/1/ removed)
+        const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbw_efdGnec0FIwtVOa8-AK2eGRyHoiSlz72QZXZXUcJ_Z3v14hg1ICxeJNae6mNjxQ_0g/exec";
+
+        let selectedFile = null;
+        let cleanedBlob = null;
+        let beforeUrl = null;
+        let afterUrl = null;
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('videoFileInput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-indigo-500'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-indigo-500');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFileSelected(e.dataTransfer.files[0]);
+        });
+
+        function handleFileSelected(arg) {
+            const file = arg.target ? (arg.target.files ? arg.target.files[0] : null) : arg;
+            if (!file) return;
+
+            selectedFile = file;
+            cleanedBlob = null;
+
+            if (beforeUrl) URL.revokeObjectURL(beforeUrl);
+            if (afterUrl) URL.revokeObjectURL(afterUrl);
+
+            beforeUrl = URL.createObjectURL(file);
+            const vBefore = document.getElementById('videoPreviewBefore');
+            const pBefore = document.getElementById('placeholderBefore');
+            vBefore.src = beforeUrl;
+            vBefore.classList.remove('hidden');
+            pBefore.classList.add('hidden');
+
+            const vAfter = document.getElementById('videoPreviewAfter');
+            const pAfter = document.getElementById('placeholderAfter');
+            vAfter.classList.add('hidden');
+            pAfter.classList.remove('hidden');
+
+            document.getElementById('fileNameDisplay').textContent = file.name;
+            document.getElementById('fileSizeDisplay').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+            document.getElementById('fileStatusBadge').textContent = 'Siap Diunggah';
+            document.getElementById('fileStatusBadge').className = 'text-emerald-400 font-semibold';
+
+            const actBtn = document.getElementById('actionBtn');
+            actBtn.disabled = false;
+            actBtn.className = 'w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer';
+
+            appendLog(`[FILE SELECTED] Berkas "${file.name}" siap diproses.`, 'indigo');
+        }
+
+        function executeSanitizationViaApi() {
+            if (!selectedFile) return;
+
+            const actBtn = document.getElementById('actionBtn');
+            actBtn.disabled = true;
+            actBtn.className = 'w-full py-3.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed';
+
+            document.getElementById('progressText').textContent = 'MEMPROSES...';
+            appendLog(`[READING] Mengonversi "${selectedFile.name}" ke Base64...`, 'amber');
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64String = e.target.result.split(',')[1];
+                
+                appendLog(`[API REQUEST] Mengirim payload ke Google Apps Script backend...`, 'indigo');
+
+                const payload = {
+                    action: 'processVideo',
+                    fileName: selectedFile.name,
+                    base64Data: base64String
+                };
+
+                try {
+                    // Send request using fetch API with CORS redirect handling
+                    const response = await fetch(GAS_BACKEND_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8' // GAS requirement for CORS handling
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP Status ${response.status}`);
+                    }
+
+                    const resData = await response.json();
+                    onProcessSuccess(resData);
+                } catch (err) {
+                    onProcessFailure(err.message);
+                }
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+
+        function onProcessSuccess(response) {
+            if (!response.success) {
+                appendLog(`[ERROR SERVER] ${response.error || 'Gagal memproses file di server.'}`, 'rose');
+                document.getElementById('progressText').textContent = 'GAGAL';
+                return;
+            }
+
+            appendLog(`✓ [SUCCESS] Pembersihan biner di Google Apps Script selesai!`, 'emerald');
+            if (response.originalSize) appendLog(`  - Ukuran Asli: ${(response.originalSize / 1024).toFixed(1)} KB`, 'slate');
+            if (response.cleanedSize) appendLog(`  - Ukuran Bersih: ${(response.cleanedSize / 1024).toFixed(1)} KB`, 'slate');
+
+            // Convert Base64 response back to binary blob
+            const byteCharacters = atob(response.cleanedBase64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            cleanedBlob = new Blob([byteArray], { type: 'video/mp4' });
+
+            // Bind to Preview Video After
+            afterUrl = URL.createObjectURL(cleanedBlob);
+            const vAfter = document.getElementById('videoPreviewAfter');
+            const pAfter = document.getElementById('placeholderAfter');
+            vAfter.src = afterUrl;
+            vAfter.classList.remove('hidden');
+            pAfter.classList.add('hidden');
+
+            document.getElementById('afterBadge').textContent = 'SANISASI SUKSES';
+            document.getElementById('afterBadge').className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold rounded-full uppercase';
+            document.getElementById('progressText').textContent = 'SELESAI';
+
+            const dlBtn = document.getElementById('downloadBtn');
+            dlBtn.disabled = false;
+            dlBtn.className = 'w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-lg';
+        }
+
+        function onProcessFailure(errMessage) {
+            appendLog(`[FATAL ERROR] Gagal terhubung ke Apps Script API: ${errMessage}`, 'rose');
+            document.getElementById('progressText').textContent = 'ERROR';
+        }
+
+        function downloadCleanFile() {
+            if (!cleanedBlob) return;
+            const fileName = selectedFile ? "clean_" + selectedFile.name : "clean_video.mp4";
+            const url = URL.createObjectURL(cleanedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 1000);
+        }
+
+        function appendLog(msg, color) {
+            const term = document.getElementById('terminal');
+            const div = document.createElement('div');
+            const colorMap = {
+                indigo: 'text-indigo-400',
+                amber: 'text-amber-400',
+                emerald: 'text-emerald-400 font-bold',
+                rose: 'text-rose-400 font-bold',
+                slate: 'text-slate-400'
+            };
+            div.className = colorMap[color] || 'text-slate-300';
+            div.textContent = msg;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }
+    </script>
+</body>
+</html>
