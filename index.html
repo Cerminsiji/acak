@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaCleaner Pro - GitHub Pages Frontend</title>
+    <title>MetaCleaner Pro - Auto Remux & SEI Excision Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -26,14 +26,14 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-base sm:text-lg leading-tight text-white flex items-center gap-2">
-                        MetaCleaner Pro <span class="text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono font-bold px-2.5 py-0.5 rounded-full">GitHub Pages Edition</span>
+                        MetaCleaner Pro <span class="text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono font-bold px-2.5 py-0.5 rounded-full">v12.0 SEI Stripper</span>
                     </h1>
-                    <p class="text-xs text-slate-400">Frontend GitHub Pages + Backend Google Apps Script Engine</p>
+                    <p class="text-xs text-slate-400">Otomatisasi Remuxing, Bitstream Filter (SEI Type 6), & Excision Engine</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold rounded-full flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> GAS API Connected
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SEI Bitstream Filter Active
                 </span>
             </div>
         </div>
@@ -41,24 +41,15 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-        <!-- CONFIGURATION BADGE -->
-        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-center justify-between text-xs font-mono">
-            <div class="flex items-center space-x-2 truncate">
-                <span class="text-slate-500">Target Backend API:</span>
-                <span id="backendUrlDisplay" class="text-indigo-400 font-bold truncate">https://script.google.com/macros/s/AKfycbw_efdGnec0FIwtVOa8-AK2eGRyHoiSlz72QZXZXUcJ_Z3v14hg1ICxeJNae6mNjxQ_0g/exec</span>
-            </div>
-            <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded text-[10px] uppercase font-bold">CORS / Form POST</span>
-        </div>
-
-        <!-- FILE UPLOAD CONTROL -->
+        <!-- FILE INPUT & ACTION CONTROL -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl flex flex-col md:flex-row gap-5 items-center justify-between">
             <div id="dropZone" class="w-full md:w-2/3 border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-950/60 flex flex-col items-center justify-center space-y-2">
                 <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center text-2xl font-bold">📹</div>
                 <div>
-                    <p class="text-xs font-semibold text-slate-200">Pilih Berkas Video MP4 untuk Dibersihkan</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Disarankan ukuran file di bawah 30 MB untuk eksekusi Apps Script optimal</p>
+                    <p class="text-xs font-semibold text-slate-200">Unggah/Pilih Berkas Video untuk Langsung Dibersihkan</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Mendukung MP4, MOV, WebM, MKV, AVI</p>
                 </div>
-                <input type="file" id="videoFileInput" accept="video/mp4,video/*" class="hidden" onchange="handleFileSelected(event)">
+                <input type="file" id="videoFileInput" accept="video/*" class="hidden" onchange="handleFileSelected(event)">
             </div>
 
             <div class="w-full md:w-1/3 flex flex-col gap-3">
@@ -72,18 +63,18 @@
                         <span id="fileSizeDisplay" class="text-slate-200">-</span>
                     </div>
                     <div class="flex justify-between text-slate-400">
-                        <span class="text-slate-500">Status Server:</span>
+                        <span class="text-slate-500">Status RAM:</span>
                         <span id="fileStatusBadge" class="text-amber-400 font-semibold">Menunggu Berkas</span>
                     </div>
                 </div>
 
-                <button id="actionBtn" onclick="executeSanitizationViaApi()" disabled class="w-full py-3.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed">
-                    ⚡ Kirim ke Apps Script API Engine
+                <button id="actionBtn" onclick="executeAutoSanitization()" disabled class="w-full py-3.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed">
+                    ⚡ Jalankan Automasi Pembersihan FFmpeg & SEI Excision
                 </button>
             </div>
         </div>
 
-        <!-- BEFORE VS AFTER INSPECTOR -->
+        <!-- BEFORE VS AFTER METADATA INSPECTOR -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <!-- PANEL BEFORE -->
@@ -91,18 +82,28 @@
                 <div class="flex items-center justify-between pb-2.5 border-b border-slate-800">
                     <h3 class="text-xs font-extrabold text-rose-400 uppercase tracking-wider flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                        1. Preview Video Input (Asli)
+                        1. Indikator SEBELUM (Input File)
                     </h3>
-                    <span id="beforeBadge" class="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] font-extrabold rounded-full uppercase">
+                    <span id="beforeRiskBadge" class="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] font-extrabold rounded-full uppercase">
                         STANDBY
                     </span>
                 </div>
 
-                <div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden aspect-video relative flex items-center justify-center">
-                    <video id="videoPreviewBefore" controls class="w-full h-full object-contain hidden"></video>
-                    <div id="placeholderBefore" class="text-center p-4">
-                        <span class="text-3xl block mb-1">🎞️</span>
-                        <p class="text-[11px] text-slate-500">Preview Video Asli</p>
+                <div class="space-y-2.5 text-xs flex-1">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <div class="flex justify-between"><span class="text-slate-500">Manifes C2PA (JUMBF):</span> <span id="mC2paBefore" class="font-mono text-slate-500">-</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">UUID Claim Box:</span> <span id="mUuidBefore" class="font-mono text-slate-500">-</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Software / Vendor Stamp:</span> <span id="mEncoderBefore" class="font-mono text-slate-500">-</span></div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <div class="flex justify-between"><span class="text-slate-500">Bitstream / SEI Data:</span> <span id="mSeiBefore" class="font-mono text-slate-500">-</span></div>
+                        <div class="flex justify-between items-center"><span class="text-slate-500">32-Byte Header Hex:</span> <span id="mHexBefore" class="font-mono text-[10px] text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded truncate max-w-[160px]">-</span></div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-slate-500">Status Platform AI Detector:</span>
+                        <span id="mRiskBefore" class="font-bold text-slate-500 text-[11px]">-</span>
                     </div>
                 </div>
             </div>
@@ -112,42 +113,52 @@
                 <div class="flex items-center justify-between pb-2.5 border-b border-slate-800">
                     <h3 class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                        2. Preview Video Hasil (Cleaned)
+                        2. Indikator SESUDAH (Hasil Sanitasi Otomatis)
                     </h3>
-                    <span id="afterBadge" class="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] font-extrabold rounded-full uppercase">
-                        MENUNGGU
+                    <span id="afterStatusBadge" class="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] font-extrabold rounded-full uppercase">
+                        MENUNGGU PROSES
                     </span>
                 </div>
 
-                <div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden aspect-video relative flex items-center justify-center">
-                    <video id="videoPreviewAfter" controls class="w-full h-full object-contain hidden"></video>
-                    <div id="placeholderAfter" class="text-center p-4">
-                        <span class="text-3xl block mb-1">✨</span>
-                        <p class="text-[11px] text-slate-500">Preview Video Hasil</p>
+                <div class="space-y-2.5 text-xs flex-1">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <div class="flex justify-between"><span class="text-slate-500">Manifes C2PA (JUMBF):</span> <span id="mC2paAfter" class="font-mono text-slate-500">-</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">UUID Claim Box:</span> <span id="mUuidAfter" class="font-mono text-slate-500">-</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Software / Vendor Stamp:</span> <span id="mEncoderAfter" class="font-mono text-slate-500">-</span></div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                        <div class="flex justify-between"><span class="text-slate-500">Bitstream / SEI Data:</span> <span id="mSeiAfter" class="font-mono text-slate-500">-</span></div>
+                        <div class="flex justify-between items-center"><span class="text-slate-500">32-Byte Header Hex:</span> <span id="mHexAfter" class="font-mono text-[10px] text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded truncate max-w-[160px]">-</span></div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-slate-500">Status Platform AI Detector:</span>
+                        <span id="mRiskAfter" class="font-bold text-slate-500 text-[11px]">-</span>
                     </div>
                 </div>
 
                 <div class="pt-1">
                     <button id="downloadBtn" disabled onclick="downloadCleanFile()" class="w-full py-2.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed">
-                        📥 Unduh Berkas Bersih (MP4)
+                        📥 Unduh Berkas Bersih (output_bersih.mp4)
                     </button>
                 </div>
             </div>
 
         </div>
 
-        <!-- TERMINAL LOG -->
+        <!-- TERMINAL LOG DISPLAY -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
             <div class="flex justify-between items-center">
                 <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    🖥️ GitHub Pages to Apps Script Execution Log
+                    🖥️ FFmpeg & SEI Bitstream Excision Terminal Log
                 </h3>
-                <span id="progressText" class="text-xs font-mono font-bold text-indigo-400">READY</span>
+                <span id="progressText" class="text-xs font-mono font-bold text-indigo-400">SIAP</span>
             </div>
 
-            <div id="terminal" class="bg-slate-950 border border-slate-800/90 rounded-xl p-4 font-mono-code text-xs text-slate-300 h-44 overflow-y-auto space-y-1.5 leading-relaxed">
-                <div class="text-indigo-400">[GitHub Pages MetaCleaner Engine] Initialized.</div>
-                <div class="text-slate-500">Pilih file video MP4 untuk dikirimkan ke Google Apps Script backend.</div>
+            <div id="terminal" class="bg-slate-950 border border-slate-800/90 rounded-xl p-4 font-mono-code text-xs text-slate-300 h-56 overflow-y-auto space-y-1.5 leading-relaxed">
+                <div class="text-indigo-400">[MetaCleaner v12.0 Engine Loaded] Enhanced Bitstream & SEI NAL Stripper Ready.</div>
+                <div class="text-slate-500">Silakan pilih berkas video untuk memulai automasi pembersihan.</div>
             </div>
         </div>
 
@@ -155,17 +166,14 @@
 
     <!-- FOOTER -->
     <footer class="mt-auto bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        <p>&copy; MetaCleaner Pro — GitHub Pages Frontend with Google Apps Script Backend Engine.</p>
+        <p>&copy; MetaCleaner Pro & FFmpeg Remux Studio — Client-Side SEI NAL Excision Engine.</p>
     </footer>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbw_efdGnec0FIwtVOa8-AK2eGRyHoiSlz72QZXZXUcJ_Z3v14hg1ICxeJNae6mNjxQ_0g/exec";
-
-        let selectedFile = null;
-        let cleanedBlob = null;
-        let beforeUrl = null;
-        let afterUrl = null;
+        let currentFile = null;
+        let fileArrayBuffer = null;
+        let processedBlob = null;
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('videoFileInput');
@@ -179,154 +187,129 @@
             if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFileSelected(e.dataTransfer.files[0]);
         });
 
-        function handleFileSelected(arg) {
+        async function handleFileSelected(arg) {
             const file = arg.target ? (arg.target.files ? arg.target.files[0] : null) : arg;
             if (!file) return;
 
-            selectedFile = file;
-            cleanedBlob = null;
-
-            if (beforeUrl) URL.revokeObjectURL(beforeUrl);
-            if (afterUrl) URL.revokeObjectURL(afterUrl);
-
-            beforeUrl = URL.createObjectURL(file);
-            const vBefore = document.getElementById('videoPreviewBefore');
-            const pBefore = document.getElementById('placeholderBefore');
-            vBefore.src = beforeUrl;
-            vBefore.classList.remove('hidden');
-            pBefore.classList.add('hidden');
-
-            const vAfter = document.getElementById('videoPreviewAfter');
-            const pAfter = document.getElementById('placeholderAfter');
-            vAfter.classList.add('hidden');
-            pAfter.classList.remove('hidden');
+            currentFile = file;
+            processedBlob = null;
 
             document.getElementById('fileNameDisplay').textContent = file.name;
             document.getElementById('fileSizeDisplay').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-            document.getElementById('fileStatusBadge').textContent = 'Siap Diunggah';
-            document.getElementById('fileStatusBadge').className = 'text-emerald-400 font-semibold';
+            document.getElementById('fileStatusBadge').textContent = 'Membaca ke RAM...';
+            document.getElementById('fileStatusBadge').className = 'text-amber-400 font-semibold';
 
-            const actBtn = document.getElementById('actionBtn');
-            actBtn.disabled = false;
-            actBtn.className = 'w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer';
-
-            appendLog(`[FILE SELECTED] Berkas "${file.name}" siap diproses.`, 'indigo');
-        }
-
-        function executeSanitizationViaApi() {
-            if (!selectedFile) return;
-
-            const actBtn = document.getElementById('actionBtn');
-            actBtn.disabled = true;
-            actBtn.className = 'w-full py-3.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed';
-
-            document.getElementById('progressText').textContent = 'MEMPROSES...';
-            appendLog(`[READING] Mengonversi "${selectedFile.name}" ke Base64...`, 'amber');
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const base64String = e.target.result.split(',')[1];
-                
-                appendLog(`[API REQUEST] Mengirim payload via HTML Form Post Bypass ke Apps Script...`, 'indigo');
-
-                // Bypass CORS Restriction by submitting via URLSearchParams/Form Post
-                const formData = new URLSearchParams();
-                formData.append('fileName', selectedFile.name);
-                formData.append('base64Data', base64String);
-
-                try {
-                    const response = await fetch(GAS_BACKEND_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: formData.toString()
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP Status ${response.status}`);
-                    }
-
-                    const resData = await response.json();
-                    onProcessSuccess(resData);
-                } catch (err) {
-                    onProcessFailure(err.message);
-                }
-            };
-            reader.readAsDataURL(selectedFile);
-        }
-
-        function onProcessSuccess(response) {
-            if (!response.success) {
-                appendLog(`[ERROR SERVER] ${response.error || 'Gagal memproses file di server.'}`, 'rose');
-                document.getElementById('progressText').textContent = 'GAGAL';
-                return;
-            }
-
-            appendLog(`✓ [SUCCESS] Pembersihan biner di Google Apps Script selesai!`, 'emerald');
-            if (response.originalSize) appendLog(`  - Ukuran Asli: ${(response.originalSize / 1024).toFixed(1)} KB`, 'slate');
-            if (response.cleanedSize) appendLog(`  - Ukuran Bersih: ${(response.cleanedSize / 1024).toFixed(1)} KB`, 'slate');
-
-            const byteCharacters = atob(response.cleanedBase64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            cleanedBlob = new Blob([byteArray], { type: 'video/mp4' });
-
-            afterUrl = URL.createObjectURL(cleanedBlob);
-            const vAfter = document.getElementById('videoPreviewAfter');
-            const pAfter = document.getElementById('placeholderAfter');
-            vAfter.src = afterUrl;
-            vAfter.classList.remove('hidden');
-            pAfter.classList.add('hidden');
-
-            document.getElementById('afterBadge').textContent = 'SANISASI SUKSES';
-            document.getElementById('afterBadge').className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold rounded-full uppercase';
-            document.getElementById('progressText').textContent = 'SELESAI';
-
+            // Reset Download Button State
             const dlBtn = document.getElementById('downloadBtn');
-            dlBtn.disabled = false;
-            dlBtn.className = 'w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-lg';
+            dlBtn.disabled = true;
+            dlBtn.className = 'w-full py-2.5 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-not-allowed';
+
+            try {
+                fileArrayBuffer = await file.arrayBuffer();
+                document.getElementById('fileStatusBadge').textContent = 'Siap di Memori';
+                document.getElementById('fileStatusBadge').className = 'text-emerald-400 font-semibold';
+                
+                // Enable Action Button
+                const actBtn = document.getElementById('actionBtn');
+                actBtn.disabled = false;
+                actBtn.className = 'w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-900/30 transition flex items-center justify-center gap-2 cursor-pointer';
+
+                appendLog(`[FILE LOADED] Berkas "${file.name}" (${file.size} bytes) dimuat ke RAM buffer.`, 'indigo');
+                inspectBeforeState();
+            } catch (err) {
+                appendLog(`[ERROR] Gagal membaca berkas: ${err.message}`, 'rose');
+            }
         }
 
-        function onProcessFailure(errMessage) {
-            appendLog(`[FATAL ERROR] ${errMessage}`, 'rose');
-            appendLog(`⚠️ SARAN: Pastikan fungsi doPost(e) di Code.gs Google Apps Script sudah di-deploy dengan versi "New Deployment" dan Who Has Access = "Anyone".`, 'amber');
-            document.getElementById('progressText').textContent = 'ERROR';
+        function inspectBeforeState() {
+            if (!fileArrayBuffer) return;
+            const uint8 = new Uint8Array(fileArrayBuffer);
+            const scanLimit = Math.min(uint8.length, 2000000);
+            
+            let hexStr = '';
+            for (let i = 0; i < Math.min(32, uint8.length); i++) {
+                hexStr += uint8[i].toString(16).padStart(2, '0').toUpperCase() + ' ';
+            }
+            document.getElementById('mHexBefore').textContent = hexStr.trim();
+
+            const textDecoder = new TextDecoder('ascii', { fatal: false });
+            const asciiSample = textDecoder.decode(uint8.slice(0, scanLimit));
+
+            let c2paFound = asciiSample.includes('c2pa') || asciiSample.includes('jumb') || asciiSample.includes('C2PA');
+            let uuidFound = asciiSample.includes('uuid') || asciiSample.includes('UUID');
+            
+            let detectedVendors = [];
+            const vendors = ['Adobe', 'Sora', 'Kling', 'Runway', 'Pika', 'Luma', 'OpenAI'];
+            for (const v of vendors) {
+                if (asciiSample.includes(v)) detectedVendors.push(v);
+            }
+
+            // SEI User Data Unregistered Detection (NAL Unit Type 6 / UUID payloads)
+            let seiFound = asciiSample.includes('user_data') || asciiSample.includes('sei') || asciiSample.includes('SEI');
+            for (let i = 0; i < scanLimit - 5; i++) {
+                // Check NAL start codes 0x000001 or 0x00000001 followed by NAL type 6 (SEI)
+                if (uint8[i] === 0x00 && uint8[i+1] === 0x00 && ((uint8[i+2] === 0x01 && (uint8[i+3] & 0x1F) === 6) || (uint8[i+2] === 0x00 && uint8[i+3] === 0x01 && (uint8[i+4] & 0x1F) === 6))) {
+                    seiFound = true;
+                    break;
+                }
+            }
+
+            document.getElementById('mC2paBefore').textContent = c2paFound ? 'TERDETEKSI (c2pa/jumb)' : 'TIDAK TERDETEKSI';
+            document.getElementById('mC2paBefore').className = c2paFound ? 'font-mono text-rose-400 font-bold' : 'font-mono text-emerald-400';
+
+            document.getElementById('mUuidBefore').textContent = uuidFound ? 'TERDETEKSI (uuid)' : 'BERSIH';
+            document.getElementById('mUuidBefore').className = uuidFound ? 'font-mono text-rose-400 font-bold' : 'font-mono text-emerald-400';
+
+            document.getElementById('mEncoderBefore').textContent = detectedVendors.length > 0 ? detectedVendors.join(', ') : 'Standard Encoder';
+            document.getElementById('mEncoderBefore').className = detectedVendors.length > 0 ? 'font-mono text-rose-400 font-bold' : 'font-mono text-slate-300';
+
+            document.getElementById('mSeiBefore').textContent = seiFound ? 'TERDETEKSI (SEI NAL Unit Type 6)' : 'BERSIH / TIDAK ADA SEI';
+            document.getElementById('mSeiBefore').className = seiFound ? 'font-mono text-rose-400 font-bold' : 'font-mono text-emerald-400';
+
+            if (c2paFound || uuidFound || seiFound || detectedVendors.length > 0) {
+                document.getElementById('mRiskBefore').textContent = 'Beresiko Shadowban / Label AI';
+                document.getElementById('mRiskBefore').className = 'font-bold text-rose-400 text-[11px]';
+
+                document.getElementById('beforeRiskBadge').textContent = 'ANCAMAN METADATA TERDETEKSI';
+                document.getElementById('beforeRiskBadge').className = 'px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-extrabold rounded-full uppercase';
+            } else {
+                document.getElementById('mRiskBefore').textContent = 'Header Standar MP4 (ftyp/isom)';
+                document.getElementById('mRiskBefore').className = 'font-bold text-emerald-400 text-[11px]';
+
+                document.getElementById('beforeRiskBadge').textContent = 'BERSIH / RISIKO RENDAH';
+                document.getElementById('beforeRiskBadge').className = 'px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-extrabold rounded-full uppercase';
+            }
         }
 
-        function downloadCleanFile() {
-            if (!cleanedBlob) return;
-            const fileName = selectedFile ? "clean_" + selectedFile.name : "clean_video.mp4";
-            const url = URL.createObjectURL(cleanedBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 1000);
-        }
-
-        function appendLog(msg, color) {
+        function appendLog(text, color = 'slate') {
             const term = document.getElementById('terminal');
             const div = document.createElement('div');
-            const colorMap = {
-                indigo: 'text-indigo-400',
-                amber: 'text-amber-400',
-                emerald: 'text-emerald-400 font-bold',
-                rose: 'text-rose-400 font-bold',
-                slate: 'text-slate-400'
-            };
-            div.className = colorMap[color] || 'text-slate-300';
-            div.textContent = msg;
+            let colorClass = 'text-slate-300';
+            if (color === 'emerald') colorClass = 'text-emerald-400 font-bold';
+            if (color === 'indigo') colorClass = 'text-indigo-400 font-semibold';
+            if (color === 'amber') colorClass = 'text-amber-400';
+            if (color === 'rose') colorClass = 'text-rose-400 font-bold';
+
+            const time = new Date().toLocaleTimeString('id-ID');
+            div.className = colorClass;
+            div.innerHTML = `<span class="text-slate-600">[${time}]</span> ${text}`;
             term.appendChild(div);
             term.scrollTop = term.scrollHeight;
         }
-    </script>
-</body>
-</html>
+
+        async function executeAutoSanitization() {
+            if (!fileArrayBuffer) return;
+
+            const term = document.getElementById('terminal');
+            term.innerHTML = '';
+            const fileName = currentFile ? currentFile.name : 'input_ai.mp4';
+            
+            appendLog(`[AUTOMATED PIPELINE v12.0] Menginisialisasi multi-pass FFmpeg & SEI Excision pada: ${fileName}`, 'indigo');
+            await delay(200);
+
+            // PASS 1: Global Remuxing & Stream Stripping
+            appendLog(`-> PASS 1/4: Global Metadata Strip & Container Remuxing...`, 'amber');
+            appendLog(`   RUN: ffmpeg -i ${fileName} -map 0 -c copy -map_metadata -1 output_temp1.mp4`, 'slate');
+            await delay(200);
+
+            // PASS 2: St
